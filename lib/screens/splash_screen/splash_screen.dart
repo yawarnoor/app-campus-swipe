@@ -18,19 +18,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   //we use future to go from one screen to other via duration time
-  //   Future.delayed(Duration(seconds: 5), () {
-  //     //no return when user is on login screen and press back, it will not return the
-  //     //user to the splash screen
-  //     Navigator.pushNamedAndRemoveUntil(
-  //         context, LoginScreen.routeName, (route) => false);
-  //   });
-  // }
-
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 5), () {
