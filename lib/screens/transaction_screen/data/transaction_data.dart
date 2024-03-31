@@ -19,7 +19,8 @@ class TransactionData {
 
 class TransactionDataProvider {
   Future<List<TransactionData>> fetchTransactionData(String cmsId) async {
-    final String apiUrl = 'http://localhost:3000/transactions/$cmsId';
+    final String apiUrl =
+        'https://backend-campus-swipe.vercel.app/transactions/$cmsId';
 
     try {
       final response = await http.get(

@@ -8,7 +8,7 @@ import 'package:campus_swipe/constants.dart';
 import 'package:campus_swipe/screens/home_screen/home_screen.dart';
 
 late bool _passwordVisible;
-const String login = 'http://127.0.0.1:3000/login';
+const String login = 'https://backend-campus-swipe.vercel.app/login';
 
 class LoginScreen extends StatefulWidget {
   static String routeName = 'LoginScreen';
@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> fetchUserData(String token, String email) async {
     var response = await http.get(
       Uri.parse(
-          'http://localhost:3000/user/${email}'), // Replace with your API endpoint
+          'https://backend-campus-swipe.vercel.app//user/${email}'), // Replace with your API endpoint
       headers: {"Authorization": "Bearer $token"},
     );
 
