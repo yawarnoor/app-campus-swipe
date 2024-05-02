@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   late SharedPreferences prefs;
+  bool _isLoading = false; // Add this line
 
   final _formKey = GlobalKey<FormState>();
 
@@ -37,6 +38,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void loginUser() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true; // Set loading state to true
+      });
+
       var reqBody = {
         "email": emailController.text,
         "password": passwordController.text,
@@ -48,19 +53,74 @@ class _LoginScreenState extends State<LoginScreen> {
         body: jsonEncode(reqBody),
       );
 
-      var jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['status']) {
-        var myToken = jsonResponse['token'];
-        var email = emailController.text;
+      if (response.statusCode == 200 &&
+          response.headers['content-type']?.contains('application/json') ==
+              true) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status']) {
+          var myToken = jsonResponse['token'];
+          var email = emailController.text;
 
-        prefs.setString('token', myToken);
-        // Fetch user data using the token
-        await fetchUserData(myToken, email);
-        Navigator.pushNamedAndRemoveUntil(
-            context, HomeScreen.routeName, (route) => false);
+          prefs.setString('token', myToken);
+          // Fetch user data using the token
+          await fetchUserData(myToken, email);
+          Navigator.pushNamedAndRemoveUntil(
+              context, HomeScreen.routeName, (route) => false);
+        } else {
+          // Assuming the server sends an error message when the password is incorrect
+          String errorMessage =
+              jsonResponse['message'] ?? 'Something went wrong';
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text(errorMessage),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        _isLoading = false; // Set loading state to false
+                      });
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       } else {
-        print('Something went wrong');
+        // Handle non-JSON response
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: kPrimaryColor,
+              title:
+                  Text('Error', style: Theme.of(context).textTheme.titleMedium),
+              content: Text('Incorrect Email/Password',
+                  style: Theme.of(context).textTheme.titleMedium),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      _isLoading = false; // Set loading state to false
+                    });
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
+    } else {
+      setState(() {
+        _isLoading = false; // Set loading state to false
+      });
     }
   }
 
@@ -73,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       var userData = jsonDecode(response.body);
-      // Save the user data to SharedPreferen-ices or state as needed
+      // Save the user data to SharedPreferences or state as needed
       prefs.setString('first_name', userData['first_name'].toString());
       prefs.setString('last_name', userData['last_name'].toString());
       prefs.setString('cms_id', userData['cms_id'].toString());
@@ -146,11 +206,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         sizedBox,
                         buildPasswordField(),
                         sizedBox,
-                        DefaultButton(
-                          onPress: loginUser,
-                          title: 'SIGN IN',
-                          iconData: Icons.arrow_forward_outlined,
-                        ),
+                        _isLoading
+                            ? CircularProgressIndicator() // Display loading indicator
+                            : DefaultButton(
+                                onPress: loginUser,
+                                title: 'SIGN IN',
+                                iconData: Icons.arrow_forward_outlined,
+                              ),
                         sizedBox,
                         Align(
                           alignment: Alignment.bottomRight,

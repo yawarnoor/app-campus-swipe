@@ -1,5 +1,6 @@
 import 'package:campus_swipe/constants.dart';
 import 'package:campus_swipe/screens/assignment_screen/assignment_screen.dart';
+import 'package:campus_swipe/screens/busservice_screen/busservice_screen.dart';
 import 'package:campus_swipe/screens/datesheet_screen/datesheet_screen.dart';
 import 'package:campus_swipe/screens/fee_screen/fee_screen.dart';
 import 'package:campus_swipe/screens/login_screen/login_screen.dart';
@@ -130,7 +131,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         HomeCard(
-                          onPress: () {},
+                          onPress: () {
+                            Navigator.pushNamed(
+                                context, BusServiceScreen.routeName);
+                          },
                           icon: 'assets/icons/transport.png',
                           title: 'Bus Service',
                         ),
