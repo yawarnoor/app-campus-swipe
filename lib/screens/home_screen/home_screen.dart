@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                       title: 'Fees Due',
-                      value: '600\$',
+                      value: 'Rs. 84030',
                     ),
                   ],
                 )
